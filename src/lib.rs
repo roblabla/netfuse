@@ -427,7 +427,7 @@ impl <NFS: NetworkFilesystem> Filesystem for NetFuse<NFS> {
             },
             Err(err) => {
                 println!("rmdir failed: {}", err);
-                reply.error(EIO);
+                reply.error(err);
             }
         }
     }
@@ -447,10 +447,9 @@ impl <NFS: NetworkFilesystem> Filesystem for NetFuse<NFS> {
             },
             Err(err) => {
                 println!("Delete failed: {}", err);
-                reply.error(EIO);
+                reply.error(err);
             }
         }
     }
 
 }
-
