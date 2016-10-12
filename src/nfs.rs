@@ -3,6 +3,7 @@ use libc::{self, ENOSYS};
 use time::Timespec;
 use std::path::Path;
 use std::ffi::{OsStr, OsString};
+use std::io::{Read, Write, Seek, SeekFrom, Error, ErrorKind};
 
 /// libc Error Code
 pub type LibcError = libc::c_int;
@@ -30,6 +31,28 @@ impl DirEntry {
     }
 }
 
+struct FileErrReader;
+
+impl Read for FileErrReader {
+    fn read(&mut self, buf: &mut[u8]) -> ::std::io::Result<usize> {
+        Err(Error::from_raw_os_error(ENOSYS))
+    }
+}
+
+impl Write for FileErrReader {
+    fn write(&mut self, buf: &[u8]) -> ::std::io::Result<usize> {
+        Err(Error::from_raw_os_error(ENOSYS))
+    }
+    fn flush(&mut self) -> ::std::io::Result<()> {
+        Err(Error::from_raw_os_error(ENOSYS))
+    }
+}
+
+impl Seek for FileErrReader {
+    fn seek(&mut self, pos: SeekFrom) -> ::std::io::Result<u64> {
+        Err(Error::from_raw_os_error(ENOSYS))
+    }
+}
 
 /// Trait to implement to provide a backend store for a `NetFuse` filesystem
 ///
@@ -61,6 +84,11 @@ pub trait NetworkFilesystem {
     fn lookup(&mut self, _path: &Path) -> Result<Metadata, LibcError> {
         Err(ENOSYS)
     }
+
+    /// Opens the file for the given operations.
+    /*fn open(&mut self, _path: &Path, flags: Flags) -> Box<Read + Write + Seek> {
+        Box::new(FileErrReader)
+    }*/
 
     /// Reads the contents of a file associated with a given path
     ///
