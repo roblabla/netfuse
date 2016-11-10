@@ -173,4 +173,8 @@ pub trait NetworkFilesystem {
         Err(ENOSYS)
     }
 
+    /// Rename the file that corresponds to a given path
+    fn rename(&mut self, _path: &Path, _newpath: &Path) -> Result<(), LibcError>{
+        Err(ENOSYS)
+    }
 }
