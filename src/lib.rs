@@ -452,4 +452,24 @@ impl <NFS: NetworkFilesystem> Filesystem for NetFuse<NFS> {
         }
     }
 
+    fn rename(&mut self, _req: &Request, _parent: u64, _name: &Path, _newparent: u64, _newname: &Path, reply: ReplyEmpty)
+    {
+        println!("rename(_parent={}, _name={}, _newparent={}, _newname={})", _parent, _name.display(), _newparent, _newname.display());
+
+        let _path = self.inodes[_parent].path.join(_name);
+        let _newpath = self.inodes[_newparent].path.join(_newname);
+
+        match self.nfs.rename(&Path::new(&_path), &Path::new(&_newpath))
+        {
+            Ok(_) =>
+            {
+                reply.ok()
+            }
+            Err(err) =>
+            {
+                println!("Renamne failed: {}", err);
+                reply.error(err)
+            }
+        }
+    }
 }
