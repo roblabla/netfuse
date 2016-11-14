@@ -75,7 +75,7 @@ pub fn mount<NFS: NetworkFilesystem>(fs: NFS, options: MountOptions) {
 }
 
 impl <NFS: NetworkFilesystem> NetFuse<NFS> {
-    pub fn new(fs: NFS, options: MountOptions) {
+    pub fn new(fs: NFS, options: MountOptions) -> NetFuse<NFS> {
         NetFuse {
             nfs: fs,
             inodes: InodeStore::new(0o550, options.uid, options.gid),
