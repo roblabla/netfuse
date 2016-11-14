@@ -75,6 +75,13 @@ pub fn mount<NFS: NetworkFilesystem>(fs: NFS, options: MountOptions) {
 }
 
 impl <NFS: NetworkFilesystem> NetFuse<NFS> {
+    pub fn new(fs: NFS, options: MountOptions) {
+        NetFuse {
+            nfs: fs,
+            inodes: InodeStore::new(0o550, options.uid, options.gid),
+            cache: HashMap::new(),
+        }
+    }
     fn cache_readdir<'a>(&'a mut self, ino: u64) -> Box<Iterator<Item=Result<(OsString, FileAttr), LibcError>> + 'a> {
         let iter = self.inodes
                         .children(ino)
